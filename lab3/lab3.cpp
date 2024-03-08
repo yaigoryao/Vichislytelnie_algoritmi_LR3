@@ -32,7 +32,7 @@ protected:
     /*Класс Item элементы DLL*/
     struct DLLIter
     {
-        explicit DLLIter(Item* ptr) : _ptr{ptr} {};
+        explicit DLLIter(Item* ptr) : _ptr{ ptr } {};
         T& operator*() const { return this->_ptr->_value; };
         T* operator->() const { return &(this->_ptr->_value); };
         DLLIter& operator++() { this->_ptr = this->_ptr->next; return *this; };
@@ -67,10 +67,10 @@ protected:
 public:
 
     DLLIter begin() noexcept { return DLLIter(this->head); };
-    DLLIter end() noexcept { return DLLIter(this->tail == nullptr? nullptr : this->tail->next); };
+    DLLIter end() noexcept { return DLLIter(this->tail == nullptr ? nullptr : this->tail->next); };
 
     const_DLLIter cbegin() const noexcept { return const_DLLIter(this->head); };
-    const_DLLIter cend() const noexcept { return const_DLLIter(this->tail == nullptr? nullptr: this->tail->next); };
+    const_DLLIter cend() const noexcept { return const_DLLIter(this->tail == nullptr ? nullptr : this->tail->next); };
 
     DLL() : head{ nullptr }, tail{ nullptr }, _length{ 0 } {/* std::cout << "Construct: " << this << std::endl;*/ };
 
@@ -113,7 +113,7 @@ public:
             begin++;
         }
     }
-    
+
     DLL& operator=(const DLL& copy)
     {
         const_DLLIter begin = copy.cbegin();
@@ -345,6 +345,34 @@ public:
     bool empty() { return _container.empty(); }
     size_t count() { return _container.length(); }
     DLL<T>& get_container() { return this->_container; }
+
+    T min(T _min)
+    {
+        T mn = _min;
+        try 
+        {
+            _container.for_each([&mn](T value) {if (value < mn) mn = value; });
+        }
+        catch (...)
+        {
+            mn = {};
+        }
+        return mn;
+    }
+
+    T max(T _max)
+    {
+        T mx = _max;
+        try
+        {
+            _container.for_each([&mx](T value) {if (value > mx) mx = value; });
+        }
+        catch (...)
+        {
+            mx = {};
+        }
+        return mx;
+    }
 };
 
 class Person
@@ -476,31 +504,51 @@ struct Tuple
 public:
     T1 _value1;
     T2 _value2;
-    Tuple(T1 v1 = {}, T2 v2 = {}) _value1 { v1 }, _value2{ v2 } {};
+    Tuple(T1 v1 = {}, T2 v2 = {}): _value1 { v1 }, _value2{ v2 } {};
 };
 
-Tuple<int, int> segmentWhereMinMultMaxGreatest(Queue<int> values, int length)
+Tuple<int, int> segmentWhereMinMultMaxGreatest(DLL<int>& seq, int length)
 {
-    if (length > values.count()) return Tuple<int, int>(-1, -1);
-    int localmx = -INT_MAX;
-    int localmn = INT_MAX;
+    if (length > seq.length()) return Tuple<int, int>(-1, -1);
+    Queue<int> queue = Queue<int>(DLL<int>());
+    int mult = -INT_MAX;
+    Tuple <int, int> bord = Tuple<int, int>();
     for (int i = 0; i < length; i++)
     {
-        int cur = values.shift();
-        if (cur > localmx) localmx = cur;
-        else if (cur < localmn) localmn = cur;
+        queue.push(seq[i]);
     }
-    int mult = -INT_MAX;
-    while (values.count())
+    for (int i = length; i < seq.length() - length; i++)
     {
-        int localmult = localmx * localmn;
-        if (localmult > mult) mult = localmult;
-        /*int localmult = localmx * localmn;
-        if (localmult > mult) mult = localmult;
-        int cur = values.shift();
-        if (cur > localmx) localmx = cur;
-        else if (cur < localmn) localmn = cur;*/
+        int cur = queue.max(-INT_MAX) * queue.min(INT_MAX);
+        if (cur > mult)
+        {
+            mult = cur;
+            bord._value1 = i - length;
+            bord._value2 = i;
+        }
+        queue.shift();
+        queue.push(seq[i]);
     }
+    return bord;
+    //int localmx = -INT_MAX;
+    //int localmn = INT_MAX;
+    //for (int i = 0; i < length; i++)
+    //{
+    //    int cur = values.shift();
+    //    if (cur > localmx) localmx = cur;
+    //    else if (cur < localmn) localmn = cur;
+    //}
+    //int mult = -INT_MAX;
+    //while (values.count())
+    //{
+    //    int localmult = localmx * localmn;
+    //    if (localmult > mult) mult = localmult;
+    //    /*int localmult = localmx * localmn;
+    //    if (localmult > mult) mult = localmult;
+    //    int cur = values.shift();
+    //    if (cur > localmx) localmx = cur;
+    //    else if (cur < localmn) localmn = cur;*/
+    //}
 };
 
 int main(int argc, char** argv)
@@ -524,7 +572,7 @@ int main(int argc, char** argv)
 
 
     ////1 
-    DLL<Person> employee = {
+    /*DLL<Person> employee = {
         Person("Архип", "Архипов", "Архипович", "Слесарь"),
         Person("Борис", "Борисов", "Борисович", "Директор"),
         Person("Валентин", "Валентинов", "Валентинович", "Повар"),
@@ -536,7 +584,7 @@ int main(int argc, char** argv)
         "Директор"
     };
     auto filtered = matchPersonProfessions(employee, jobs);
-    for (auto& person : filtered) { std::cout << person << std::endl; } 
+    for (auto& person : filtered) { std::cout << person << std::endl; } */
     
 
 
@@ -559,12 +607,12 @@ int main(int argc, char** argv)
     ////2
      //std::cout << std::endl;
     
-     int count = 0;
-    std::cout << "Введите длину последовательности: ";
+    /*int count = 0;
+    std::cout << "введите длину последовательности: ";
     std::cin >> count;
     std::cout << std::endl;
     std::string seq = "";
-    std::cout << "Введите последовательность скобок: ";
+    std::cout << "введите последовательность скобок: ";
     for (int i = 0; i < count; i++)
     {
         char sk = '\0';
@@ -572,9 +620,29 @@ int main(int argc, char** argv)
         seq += sk;
     }
     std::cout << std::endl;
-    std::cout << "Последовательность верна?" << (isValid(seq) ? " Да" : " Нет") << std::endl;
+    std::cout << "последовательность верна?" << (isValid(seq) ? " да" : " нет") << std::endl;*/
+   
+    ////3 
+    DLL<int> seq = DLL<int>();
 
+    int size = 0;
+    std::cout << "Введите длину последовательности: ";
+    std::cin >> size;
+    int sub_size = 0;
+    std::cout << "Введите длину подпоследовательности: ";
+    std::cin >> sub_size;
+    std::cout << std::endl;
+    for (int i = 0; i < size; i++)
+    {
+        int el = 0;
+        std::cout << "Введите элемент " + std::to_string(i+1) + " последовательности: ";
+        std::cin >> el;
+        seq.emplace_back(el);
+    }
 
+    Tuple<int, int> bord = segmentWhereMinMultMaxGreatest(seq, sub_size);
+
+    std::cout << "[" << bord._value1 << "," << bord._value2 << "]" << std::endl;
     // 
     //std::cout << std::endl;
     //int count = 0;
