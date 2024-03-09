@@ -7,6 +7,7 @@
 #define _CRTDBG_MAP_ALLOC
 #include <stdlib.h>
 #include <crtdbg.h>
+#include <chrono>
 /*Класс Double Linked List*/
 template <class T>
 class DLL
@@ -441,22 +442,6 @@ bool closeSk(char sk)
     else return false;
 }
 
-//bool isValid(std::string skobki)
-//{
-//    if (skobki.size() % 2 != 0) return false;
-//    std::stack<char> sequence = std::stack<char>();
-//    for (auto el : skobki)
-//    {
-//        if (openSk(el)) sequence.push(el);
-//        else if (closeSk(el))
-//        {
-//            if (sequence.empty() || sequence.top() != oppositeSk(el)) return false;
-//            else sequence.pop();
-//        }
-//    }
-//    return true;
-//}
-
 char oppositeSk(char sk)
 {
     switch (sk)
@@ -480,6 +465,22 @@ char oppositeSk(char sk)
         return '{';
         break;
     }
+}
+
+bool isValidSTL(std::string skobki)
+{
+    if (skobki.size() % 2 != 0) return false;
+    std::stack<char> sequence = std::stack<char>();
+    for (auto el : skobki)
+    {
+        if (openSk(el)) sequence.push(el);
+        else if (closeSk(el))
+        {
+            if (sequence.empty() || sequence.top() != oppositeSk(el)) return false;
+            else sequence.pop();
+        }
+    }
+    return true;
 }
 
 bool isValid(std::string skobki)
@@ -554,6 +555,7 @@ Tuple<int, int> segmentWhereMinMultMaxGreatest(DLL<int>& seq, int length)
 int main(int argc, char** argv)
 {
     setlocale(0, "ru");
+    
     //DLL<int> list = {-2, -1, 0};
     //std::for_each(list.begin(), list.end(), [](DLL<int>::Item el) {std::cout << el._value << std::endl; });
     /*list.for_each([](int &value) {std::cout << value << std::endl; });
@@ -572,47 +574,63 @@ int main(int argc, char** argv)
 
 
     ////1 
-    /*DLL<Person> employee = {
+    DLL<Person> employee = {
+        Person("Архип", "Архипов", "Архипович", "Слесарь"),
+        Person("Борис", "Борисов", "Борисович", "Директор"),
+        Person("Валентин", "Валентинов", "Валентинович", "Повар"),
+        Person("Геннадий", "Геннадьев", "Геннадьевич", "Сварщик"),
+        Person("Дмитрий", "Дмитриев", "Дмитриевич", "Повар"),
+        Person("Егор", "Егоров", "Егорович", "Повар"),
+        Person("Жора", "Жоров", "Жорович", "Автомеханик"),
+        Person("Заур", "Зауров", "Заурович", "Грузчик"),
+        Person("Игорь", "Игорев", "Игоревич", "Охранник"),
+        Person("Константин", "Константинов", "Константинович", "Грузчик"),
+        Person("Любовь", "Любовина", "Любовьевна", "Библиотекарь"),
+        Person("Михаил", "Михаилов", "Михаилович", "Слесарь"),
+        Person("Николай", "Николаев", "Николаевич", "Уборщик"),
+        Person("Олег", "Олегов", "Олегович", "Охранник"),
+        Person("Петр", "Петров", "Петрович", "Уборщик"),
+    };
+    DLL<std::string> jobs = {
+        "Повар",
+        "Директор",
+        "Охранник"
+    };
+
+    auto begin = std::chrono::high_resolution_clock::now();
+    auto filtered = matchPersonProfessions(employee, jobs);
+    auto end = std::chrono::high_resolution_clock::now();
+    auto elapsed_ms = ((std::chrono::nanoseconds)(end-begin)).count();
+    std::cout << "Время работы алгоритма (собственные структуры): " << elapsed_ms / std::pow(10, 6) << std::endl;
+    for (auto& person : filtered) { std::cout << person << std::endl; } 
+    
+
+
+
+    /*std::list <Person> employee = {
         Person("Архип", "Архипов", "Архипович", "Слесарь"),
         Person("Борис", "Борисов", "Борисович", "Директор"),
         Person("Валентин", "Валентинов", "Валентинович", "Повар"),
         Person("Геннадий", "Геннадьев", "Геннадьевич", "Сварщик"),
         Person("Дмитрий", "Дмитриев", "Дмитриевич", "Повар")
     };
-    DLL<std::string> jobs = {
+    std::list<std::string> jobs = {
         "Повар",
         "Директор"
     };
     auto filtered = matchPersonProfessions(employee, jobs);
-    for (auto& person : filtered) { std::cout << person << std::endl; } */
+    for (auto& person : filtered) { std::cout << person << std::endl; }*/
+
+
+    //2
+    std::cout << std::endl;
     
-
-
-
-    //std::list <Person> employee = {
-    //    Person("Архип", "Архипов", "Архипович", "Слесарь"),
-    //    Person("Борис", "Борисов", "Борисович", "Директор"),
-    //    Person("Валентин", "Валентинов", "Валентинович", "Повар"),
-    //    Person("Геннадий", "Геннадьев", "Геннадьевич", "Сварщик"),
-    //    Person("Дмитрий", "Дмитриев", "Дмитриевич", "Повар")
-    //};
-    //std::list<std::string> jobs = {
-    //    "Повар",
-    //    "Директор"
-    //};
-    //auto filtered = matchPersonProfessions(employee, jobs);
-    //for (auto& person : filtered) { std::cout << person << std::endl; }
-
-
-    ////2
-     //std::cout << std::endl;
-    
-    /*int count = 0;
-    std::cout << "введите длину последовательности: ";
+    int count = 0;
+    std::cout << "Введите длину последовательности: ";
     std::cin >> count;
     std::cout << std::endl;
     std::string seq = "";
-    std::cout << "введите последовательность скобок: ";
+    std::cout << "Введите последовательность скобок: ";
     for (int i = 0; i < count; i++)
     {
         char sk = '\0';
@@ -620,10 +638,23 @@ int main(int argc, char** argv)
         seq += sk;
     }
     std::cout << std::endl;
-    std::cout << "последовательность верна?" << (isValid(seq) ? " да" : " нет") << std::endl;*/
+
+    begin = std::chrono::high_resolution_clock::now();
+    bool r1 = isValid(seq);
+    end = std::chrono::high_resolution_clock::now();
+    elapsed_ms = ((std::chrono::nanoseconds)(end - begin)).count();
+    std::cout << "Время работы алгоритма (собственные структуры): " << elapsed_ms / std::pow(10, 6) << std::endl;
+    std::cout << "Последовательность верна (собственные структуры)?" << (r1 ? " да" : " нет") << std::endl;
+
+    begin = std::chrono::high_resolution_clock::now();
+    bool r2 = isValidSTL(seq);
+    end = std::chrono::high_resolution_clock::now();
+    elapsed_ms = ((std::chrono::nanoseconds)(end - begin)).count();
+    std::cout << "Время работы алгоритма (STL-структуры): " << elapsed_ms / std::pow(10, 6) << std::endl;
+    std::cout << "Последовательность верна (STL-структуры)?" << (r2 ? " да" : " нет") << std::endl;
    
     ////3 
-    DLL<int> seq = DLL<int>();
+    DLL<int> sequence = DLL<int>();
 
     int size = 0;
     std::cout << "Введите длину последовательности: ";
@@ -637,13 +668,16 @@ int main(int argc, char** argv)
         int el = 0;
         std::cout << "Введите элемент " + std::to_string(i+1) + " последовательности: ";
         std::cin >> el;
-        seq.emplace_back(el);
+        sequence.emplace_back(el);
     }
 
-    Tuple<int, int> bord = segmentWhereMinMultMaxGreatest(seq, sub_size);
-
-    std::cout << "[" << bord._value1 << "," << bord._value2 << "]" << std::endl;
-    // 
+    begin = std::chrono::high_resolution_clock::now();
+    Tuple<int, int> bord = segmentWhereMinMultMaxGreatest(sequence, sub_size);
+    end = std::chrono::high_resolution_clock::now();
+    elapsed_ms = ((std::chrono::nanoseconds)(end - begin)).count();
+    std::cout << "Время работы алгоритма (собственные структуры): " << elapsed_ms / std::pow(10, 6) << std::endl;
+    std::cout << "Отрезок с максимальным произведением min*max: " << "[" << bord._value1 << "," << bord._value2 << "]" << std::endl;
+     
     //std::cout << std::endl;
     //int count = 0;
     //std::cout << "Введите длину последовательности: ";
